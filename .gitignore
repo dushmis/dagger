@@ -1,3 +1,6 @@
+*~
+\#*\#
+
 .classpath
 .factorypath
 .project
@@ -13,6 +16,7 @@ lib
 target
 pom.xml.*
 release.properties
+build.log
 
 .idea
 *.iml
@@ -21,3 +25,5 @@ classes
 obj
 
 .DS_Store
+
+dependency-reduced-pom.xml

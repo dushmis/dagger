@@ -23,45 +23,50 @@
     <version>7</version>
   </parent>
 
-  <groupId>com.squareup</groupId>
+  <groupId>com.google.dagger</groupId>
   <artifactId>dagger-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>2.1-SNAPSHOT</version>
   <name>Dagger (Parent)</name>
-  <description>A JSR-330 dependency injector for Android and Java.</description>
+  <description>A fast dependency injector for Android and Java.</description>
   <url>https://github.com/square/dagger</url>
 
   <modules>
-    <module>androidmanifest</module>
     <module>compiler</module>
     <module>core</module>
-    <module>example</module>
+    <!-- examples are handled in a default profile (see below) -->
+    <module>producers</module>
   </modules>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Compilation -->
-    <java.version>1.6</java.version>
+    <java.version>1.7</java.version>
     <javax.inject.version>1</javax.inject.version>
-    <maven.version>2.0.6</maven.version>
-    <ant.version>1.8.2</ant.version>
+    <javawriter.version>2.5.0</javawriter.version>
+    <auto.common.version>0.4</auto.common.version>
+    <auto.service.version>1.0-rc2</auto.service.version>
+    <auto.value.version>1.0</auto.value.version>
+    <guava.version>18.0</guava.version>
 
     <!-- Test Dependencies -->
-    <junit.version>4.10</junit.version>
-    <fest.version>1.4</fest.version>
+    <compile-testing.version>0.7</compile-testing.version>
+    <junit.version>4.11</junit.version>
+    <mockito.version>1.9.5</mockito.version>
+    <truth.version>0.26</truth.version>
   </properties>
 
   <scm>
-    <url>http://github.com/square/dagger/</url>
-    <connection>scm:git:git://github.com/square/dagger.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/square/dagger.git</developerConnection>
+    <url>http://github.com/google/dagger/</url>
+    <connection>scm:git:git://github.com/google/dagger.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/google/dagger.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>http://github.com/square/dagger/issues</url>
+    <url>http://github.com/google/dagger/issues</url>
   </issueManagement>
 
   <licenses>
@@ -72,8 +77,8 @@
   </licenses>
 
   <organization>
-    <name>Square, Inc.</name>
-    <url>http://squareup.com</url>
+    <name>Google, Inc.</name>
+    <url>http://www.google.com</url>
   </organization>
 
   <dependencyManagement>
@@ -84,19 +89,34 @@
         <version>${javax.inject.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-plugin-api</artifactId>
-        <version>${maven.version}</version>
+        <groupId>com.squareup</groupId>
+        <artifactId>javawriter</artifactId>
+        <version>${javawriter.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-core</artifactId>
-        <version>${maven.version}</version>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.ant</groupId>
-        <artifactId>ant</artifactId>
-        <version>${ant.version}</version>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-testlib</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.auto</groupId>
+        <artifactId>auto-common</artifactId>
+        <version>${auto.common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.auto.service</groupId>
+        <artifactId>auto-service</artifactId>
+        <version>${auto.service.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.auto.value</groupId>
+        <artifactId>auto-value</artifactId>
+        <version>${auto.value.version}</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
@@ -104,19 +124,44 @@
         <version>${junit.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.easytesting</groupId>
-        <artifactId>fest-assert</artifactId>
-        <version>${fest.version}</version>
+        <groupId>com.google.testing.compile</groupId>
+        <artifactId>compile-testing</artifactId>
+        <version>${compile-testing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.truth</groupId>
+        <artifactId>truth</artifactId>
+        <version>${truth.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-invoker-plugin</artifactId>
+          <version>1.7</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.5</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
@@ -127,26 +172,31 @@
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>2.3.2</version><!--$NO-MVN-MAN-VER$-->
         <configuration>
           <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.9.1</version>
+        <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <failsOnError>true</failsOnError>
+          <doctitle>Dagger Dependency Injection ${project.version} API</doctitle>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.10</version>
+        <configuration>
+          <failsOnError>false</failsOnError>
           <consoleOutput>true</consoleOutput>
           <configLocation>checkstyle.xml</configLocation>
         </configuration>
         <executions>
           <execution>
-            <phase>verify</phase>
+            <phase>compile</phase>
             <goals>
               <goal>checkstyle</goal>
             </goals>
@@ -154,21 +204,25 @@
         </executions>
       </plugin>
     </plugins>
-
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-plugin-plugin</artifactId>
-          <version>2.8</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-invoker-plugin</artifactId>
-          <version>1.7</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
+
+  <!--
+    A profile which when switched off excludes example modules.  By default the profile
+    is on and invokes examples.  However, when processing javadocs, it is switched off
+    omitting the example code from the javadoc.
+  -->
+  <profiles>
+    <profile>
+      <id>examples</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>core</module>
+        <module>compiler</module>
+        <module>examples</module>
+        <module>producers</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

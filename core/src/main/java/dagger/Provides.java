@@ -16,6 +16,7 @@
  */
 package dagger;
 
+import dagger.internal.Beta;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -25,7 +26,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotates methods of a module to create a provider method binding. The
- * method's return type is bound to it's returned value. The object graph will
+ * method's return type is bound to its returned value. The object graph will
  * pass dependencies to the method as parameters.
  *
  * @author Bob Lee
@@ -46,7 +47,23 @@ public @interface Provides {
      * method as parameters. The {@code Set<T>} produced from the accumulation of values will be
      * immutable.
      */
-    SET
+    SET,
+
+    /**
+     * Like {@link #SET}, except the method's return type is {@code Set<T>}, where any values are
+     * contributed to the set. An example use is to provide a default empty set binding, which is
+     * otherwise not possible using {@link #SET}.
+     */
+    SET_VALUES,
+
+    /**
+     * The method's return type forms the type argument for the value of a
+     * {@code Map<K, Provider<V>>}, and the combination of the annotated key and the returned value
+     * is contributed to the map as a key/value pair. The {@code Map<K, Provider<V>>} produced from
+     * the accumulation of values will be immutable.
+     */
+    @Beta
+    MAP;
   }
 
   Type type() default Type.UNIQUE;
