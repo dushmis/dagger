@@ -27,3 +27,11 @@ obj
 .DS_Store
 
 dependency-reduced-pom.xml
+
+gen-external-apklibs
+
+bazel-*
+
+*.pyc
+
+.gradle
